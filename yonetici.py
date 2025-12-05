@@ -16,13 +16,13 @@ custom_filter = [
 def sunuculari_bul():
     """AWS'ye gidip listeyi alıp getiren fonksiyon"""
     logging.info("Sunucular Aranıyor...")
-    # .filter (küçük harf) doğrusudur.
+    
     target_instances = ec2.instances.filter(Filters=custom_filter)
     return target_instances
 
 # --- 2. GECE AMİRİ ---
 def gece_operasyonu(gelen_liste): 
-    # DİKKAT: Döngüyü parantezden gelen 'gelen_liste' üzerinde kuruyoruz.
+    # ATTENTION: We build the cycle on the "incoming_list" from the parentheses.
     for sunucu in gelen_liste:
         logging.info(f"İncelenen ID: {sunucu.id} - Durum: {sunucu.state['Name']}")
         
@@ -45,7 +45,7 @@ def sabah_operasyonu(gelen_liste):
         if instance.state['Name'] == "stopped":
             try:
                 logging.info(f"{instance.id} başlatılıyor...")
-                instance.start() # DÜZELTME: running() değil start()
+                instance.start() 
                 instance.wait_until_running() # Bekleme
                 logging.info(f"BAŞARILI: {instance.id} çalışıyor.") # DÜZELTME: logging.info
             except Exception as e:
@@ -53,20 +53,20 @@ def sabah_operasyonu(gelen_liste):
         elif instance.state['Name'] == "running":
             logging.info(f"{instance.id} zaten çalışıyor.")
 
-# --- 4. KOMUTA MERKEZİ (Main Block) ---
-# Burası kodun beyni. Fonksiyonları burada çağırıyoruz.
+# --- 4. KOMUTA CENTER (Main Block) ---
+#  This is where we call the functions.
 
 if __name__ == "__main__":
-    # Önce malzemeciyi gönderip listeyi alalım
+    # take the list
     bulunan_sunucular = sunuculari_bul()
     
     secim = input("Hangi Operasyon? (1: Gece/Kapat, 2: Sabah/Aç): ")
     
     if secim == "1":
-        # Listeyi gece amirine teslim ediyoruz
+        # We deliver the list to the night manager
         gece_operasyonu(bulunan_sunucular)
     elif secim == "2":
-        # Listeyi sabah amirine teslim ediyoruz
+        # We deliver the list to the morning supervisor
         sabah_operasyonu(bulunan_sunucular)
     else:
         print("Geçersiz seçim.")
